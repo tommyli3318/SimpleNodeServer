@@ -44,16 +44,16 @@ app.post('/', (req, res) => {
 app.get('/expensiveTrips', (req, res) => {
     // Async scope so await can be used
     (async () => {
-        let expensiveContactIds = []; // Stores Contact Ids of customers with trip expense > 25000
+        let expensiveContactIds = new Set(); // Stores Contact Ids of customers with trip expense > 25000
         for (var trip of await csvAsJson('./fake_finity_data/trip_data.csv')) {
             if (parseInt(trip['trip_expense_total'].substring(1)) > 25000) {
-                expensiveContactIds.push(trip['contact_id']);
+                expensiveContactIds.add(trip['contact_id']);
             }
         }
 
         result = []; // Stores firstname,lastname,email of customers with trip expense > 25000
         for (var contact of await csvAsJson('./fake_finity_data/contacts.csv')) {
-            if (expensiveContactIds.includes(contact['id'])) {
+            if (expensiveContactIds.has(contact['id'])) {
                 // this customer had an expensive trip
                 result.push({
                     'first_name': contact['first_name'], 
